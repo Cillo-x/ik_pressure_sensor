@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  # main is the release branch, dev is the integration branch.
+  push:
+    branches: [main, dev]
+  pull_request:
+    # Pull requests into dev only need the fast Lint gate.  The full build runs
+    # once the merge lands on dev (push event above), and is mandatory for main.
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A second push supersedes the first instead of queueing another ROS build.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    # This name is what branch protection shows as the required status check.
+    name: Humble build + test
+    # Humble targets Jammy; do not move this to ubuntu-latest blindly.
+    runs-on: ubuntu-22.04
+    # Fail instead of hanging if a step stalls (protects the monthly minutes).
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up ROS 2 Humble
+        uses: ros-tooling/setup-ros@v0.7
+        with:
+          required-ros-distributions: humble
+
+      - name: Build and test
+        uses: ros-tooling/action-ros-ci@v0.4
+        with:
+          target-ros2-distro: humble
+          package-name: ik_pressure_sensor
+          # coverage/lcov tooling is pointless for a small Python package and
+          # adds minutes to every run.
+          coverage-result: false

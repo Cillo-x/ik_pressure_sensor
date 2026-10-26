@@ -1,0 +1,10 @@
+# Overrides for running the node without any hardware.
+#
+#   ros2 launch ik_pressure_sensor pressure_sensor.launch.py \
+#       params_file:="$(ros2 pkg prefix ik_pressure_sensor)/share/ik_pressure_sensor/config/pressure_sensor_mock.yaml"
+#
+# Only the keys that differ from the code defaults need to be listed here.
+ik_pressure_sensor:
+  ros__parameters:
+    use_mock: true
+    poll_rate: 2.0

@@ -1,0 +1,8 @@
+# Keep the CI actions themselves up to date; one small PR per week at most.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3

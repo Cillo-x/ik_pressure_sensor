@@ -1,0 +1,17 @@
+# udev rule that gives the USB-RS485 adapter a stable name.
+#
+# Install (needs root):
+#   sudo cp 99-ik-pressure-sensor.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload-rules && sudo udevadm trigger
+#
+# Then use port: /dev/ik_pressure_sensor in pressure_sensor.yaml.
+#
+# Fill in the identifiers of YOUR adapter first:
+#   lsusb                                  # idVendor:idProduct
+#   udevadm info -a -n /dev/ttyUSB0 | grep -E 'idVendor|idProduct|serial'
+#
+# Cheap CH340 clones often report no serial number; in that case drop
+# ATTRS{serial} from the match below, but be aware that the rule then also
+# matches a second identical adapter.
+
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", ATTRS{serial}=="REPLACE_WITH_YOUR_SERIAL", SYMLINK+="ik_pressure_sensor", GROUP="dialout", MODE="0660"

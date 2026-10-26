@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+pytest-cache-files-*/
+*.egg-info/
+
+# colcon
+build/
+install/
+log/
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

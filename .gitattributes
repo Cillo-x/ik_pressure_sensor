@@ -1,0 +1,12 @@
+# Normalise line endings: everything is authored on Windows but consumed on
+# Linux. Without this, a checkout with core.autocrlf=true would turn the
+# Python sources, launch file and udev rule into CRLF files.
+* text=auto eol=lf
+
+# Mark real binaries so git never tries to diff or merge them.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.pdf  binary
+*.zip  binary
+*.step binary

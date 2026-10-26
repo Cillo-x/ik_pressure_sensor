@@ -1,0 +1,33 @@
+# Default parameters for ik_pressure_sensor.
+#
+# The node name here must match the node name created in pressure_node.py
+# (or the launch file), otherwise the parameters are not applied.
+ik_pressure_sensor:
+  ros__parameters:
+    # --- serial link -------------------------------------------------------
+    port: /dev/ttyUSB0          # prefer a udev symlink in production
+    baudrate: 9600              # device default; 1200..115200 supported
+    slave_id: 1                 # Modbus slave address, 1..247
+    timeout: 0.25               # seconds, per attempt
+    retries: 2                  # extra attempts after the first one
+    reconnect_interval: 2.0     # seconds between attempts to reopen the port
+
+    # --- publishing --------------------------------------------------------
+    poll_rate: 2.0              # Hz, read the device this often
+    frame_id: pressure_link     # header.frame_id; set to a real robot frame
+    pressure_topic: pressure
+    temperature_topic: temperature
+    publish_temperature: true
+    qos_reliable: false         # false = best effort (sensor data profile)
+
+    # --- calibration -------------------------------------------------------
+    pressure_offset_pa: 0.0     # added to every measurement, for fine trim
+
+    # --- health ------------------------------------------------------------
+    offline_threshold: 3        # consecutive failures before reporting offline
+
+    # --- simulation (no hardware) -----------------------------------------
+    use_mock: false
+    mock_pressure_pa: 101325.0
+    mock_temperature_c: 25.0
+    mock_failure_rate: 0.0      # 0..1, probability of a simulated link failure
