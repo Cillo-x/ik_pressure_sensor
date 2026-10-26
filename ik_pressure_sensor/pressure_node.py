@@ -223,7 +223,7 @@ class PressureSensorNode(Node):
                 transport = SerialTransport(
                     self._port, self._baudrate, timeout=self._timeout
                 )
-                transport.open()
+                transport.open_port()
                 sensor = PressureSensor(
                     transport,
                     slave_id=self._slave_id,

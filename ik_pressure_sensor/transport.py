@@ -1,7 +1,7 @@
 """
 Byte transports for the pressure sensor driver.
 
-:class:`Transport` is a deliberately tiny interface -- open, close, write,
+:class:`Transport` is a deliberately tiny interface -- open_port, close,
 read, discard pending input -- so that the device layer can be driven either
 by a real serial port or by :class:`MockTransport` in tests.  All the serial
 specific behaviour (baudrate, 8N1 framing, timeouts) is confined to
@@ -44,7 +44,7 @@ class Transport:
         """Whether the channel is currently usable."""
         raise NotImplementedError
 
-    def open(self) -> None:
+    def open_port(self) -> None:
         """Open the channel.  Idempotent implementations are preferred."""
         raise NotImplementedError
 
@@ -103,7 +103,7 @@ class SerialTransport(Transport):
     def is_open(self) -> bool:
         return self._serial is not None and bool(self._serial.is_open)
 
-    def open(self) -> None:
+    def open_port(self) -> None:
         if self.is_open:
             return
         if _serial is None:
@@ -207,7 +207,7 @@ class MockTransport(Transport):
     def is_open(self) -> bool:
         return self._open
 
-    def open(self) -> None:
+    def open_port(self) -> None:
         self.opened += 1
         self._open = True
 

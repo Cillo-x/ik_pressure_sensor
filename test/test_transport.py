@@ -15,7 +15,7 @@ import pytest
 
 def test_mock_transport_serves_scripted_responses_in_order():
     mock = t.MockTransport([b'\x01\x02', b'\x03'])
-    mock.open()
+    mock.open_port()
     assert mock.is_open
     assert mock.read(2, 0.1) == b'\x01\x02'
     assert mock.read(2, 0.1) == b'\x03'
@@ -28,7 +28,7 @@ def test_mock_transport_serves_scripted_responses_in_order():
 
 def test_mock_transport_records_written_bytes():
     mock = t.MockTransport()
-    mock.open()
+    mock.open_port()
     mock.write(b'\x01\x03')
     mock.write(b'\x02')
     assert mock.written == [b'\x01\x03', b'\x02']
@@ -36,14 +36,14 @@ def test_mock_transport_records_written_bytes():
 
 def test_mock_transport_keeps_leftover_for_later_reads():
     mock = t.MockTransport([b'\xAA\xBB\xCC'])
-    mock.open()
+    mock.open_port()
     assert mock.read(2, 0.1) == b'\xAA\xBB'
     assert mock.read(2, 0.1) == b'\xCC'
 
 
 def test_mock_transport_reset_input_discards_leftover():
     mock = t.MockTransport([b'\xAA\xBB\xCC'])
-    mock.open()
+    mock.open_port()
     assert mock.read(2, 0.1) == b'\xAA\xBB'
     mock.reset_input()
     assert mock.read(2, 0.1) == b''
@@ -51,7 +51,7 @@ def test_mock_transport_reset_input_discards_leftover():
 
 def test_mock_transport_queue_response():
     mock = t.MockTransport()
-    mock.open()
+    mock.open_port()
     assert mock.pending_responses == 0
     mock.queue_response(b'\x01')
     assert mock.pending_responses == 1
@@ -60,7 +60,7 @@ def test_mock_transport_queue_response():
 
 def test_mock_transport_can_fail_writes():
     mock = t.MockTransport()
-    mock.open()
+    mock.open_port()
     mock.write_error = t.TransportError('boom')
     with pytest.raises(t.TransportError):
         mock.write(b'\x00')
@@ -68,7 +68,7 @@ def test_mock_transport_can_fail_writes():
 
 def test_mock_transport_zero_size_read():
     mock = t.MockTransport([b'\x01'])
-    mock.open()
+    mock.open_port()
     assert mock.read(0, 0.1) == b''
     assert mock.read(-1, 0.1) == b''
 
@@ -87,7 +87,7 @@ def test_serial_transport_reports_unopenable_port():
     transport = t.SerialTransport('COM_DOES_NOT_EXIST_42', 9600, timeout=0.05)
     assert not transport.is_open
     with pytest.raises(t.TransportError):
-        transport.open()
+        transport.open_port()
     assert not transport.is_open
 
 
