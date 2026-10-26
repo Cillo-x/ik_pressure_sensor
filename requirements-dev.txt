@@ -3,11 +3,14 @@
 #   python -m pip install -r requirements-dev.txt
 #
 # The CI lint job installs exactly this file, so pin the ranges here rather
-# than in the workflow.  Keep them compatible with the versions that
-# ament_flake8 / ament_pep257 ship on ROS 2 Humble.
+# than in the workflow.  The plugin set mirrors what ament_flake8 bundles on
+# ROS 2 Humble -- keep them in sync, otherwise the fast Lint gate silently
+# accepts code that the ROS build later rejects.
 flake8>=7,<8
+flake8-builtins>=2.5,<3
 flake8-bugbear>=24,<27
 flake8-comprehensions>=3.14,<4
 flake8-docstrings>=1.7,<2
 flake8-import-order>=0.19,<0.20
+flake8-quotes>=3.4,<4
 pydocstyle>=6.3,<7
