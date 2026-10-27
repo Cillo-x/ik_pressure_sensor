@@ -29,7 +29,7 @@ def _frame(pdu_hex: str) -> bytes:
 
 def _sensor(responses=(), **kwargs):
     mock = tr.MockTransport(responses)
-    mock.open()
+    mock.open_port()
     return PressureSensor(mock, **kwargs), mock
 
 
@@ -185,7 +185,7 @@ def test_response_with_wrong_register_count_is_retried():
 
 def test_consecutive_failures_reset_after_recovery():
     mock = tr.MockTransport()
-    mock.open()
+    mock.open_port()
     sensor = PressureSensor(mock, retries=0)
 
     with pytest.raises(DeviceCommunicationError):

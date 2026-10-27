@@ -1,8 +1,12 @@
 # Keep the CI actions themselves up to date; one small PR per week at most.
+#
+# target-branch: dev -- dependency updates follow the same flow as any other
+# change and must not be able to land on main directly.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
+    target-branch: dev
     schedule:
       interval: weekly
     open-pull-requests-limit: 3
