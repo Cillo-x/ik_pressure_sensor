@@ -13,7 +13,7 @@ This repository ships software only.
 ## Where to look
 
 - Wire format, register map, scaling, CRC, example frames: `doc/01-485协议与数据域.md`
-- Serial device setup, runtime behaviour, diagnostics: `doc/02-使用注意事项.md`
+- Serial device setup, runtime behaviour, diagnostics: `doc/02-运行与部署.md`
 - Frame encode/decode, CRC, scaling — pure, no I/O, no ROS: `ik_pressure_sensor/modbus_rtu.py`
 - Byte transport, real serial and mock: `ik_pressure_sensor/transport.py`
 - Request/response, retries, link statistics: `ik_pressure_sensor/device.py`
