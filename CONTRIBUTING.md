@@ -1,63 +1,45 @@
 # 贡献指南
 
-## 分支模型
+## 分支与合并
 
-| 分支 | 用途 | 保护规则 |
-|---|---|---|
-| `main` | 发布分支，只接受已经过完整构建的代码 | 必须走 PR；`Lint` + `Humble build + test` 都必须通过；禁止直接 push、禁止 force push |
-| `dev` | 集成分支，日常 PR 的目标 | 必须走 PR；`Lint` 必须通过；禁止 force push |
-| `feat/<topic>`、`fix/<topic>` | 功能 / 修复 | 无保护，随用随删 |
+| 分支 | 用途 | 保护 | 合并方式 |
+|---|---|---|---|
+| `main` | 发布分支 | PR + `Python style` + `Humble build + test`，禁 force push | merge commit |
+| `dev` | 集成分支，日常 PR 的目标 | PR + `Python style`，禁 force push | squash |
+| `feat/<topic>`、`fix/<topic>` | 功能与修复，随用随删 | 无 | — |
 
-仓库的**默认分支保持 `main`**：这样别人 `git clone` 拿到的是稳定可用的版本，
-也符合"clone 下来直接能用"的定位。代价是开 PR 时要手动把目标分支选成 `dev`
-（`gh pr create --base dev`，网页里改下拉框）。
+功能分支合入 `dev` 用 squash，让集成分支上一个提交对应一个改动；  
+`dev` 合入 `main`
+用 merge commit，保留祖先关系，使下次发版的 diff 只含新增改动。
 
-## 日常工作流
+默认分支是 `main`，开 PR 时需显式指定 `--base dev`。
+
+## 日常流程
 
 ```bash
 git switch dev && git pull
 git switch -c feat/whatever
 
-# ... 改代码 ...
-
-python -m pip install -r requirements-dev.txt   # 一次性
-python -m flake8 .                              # 本地先过一遍风格
-python -m pytest test -q                        # 112 passed, 2 skipped
+# ... 修改 ...
 
 git push -u origin feat/whatever
-gh pr create --base dev --fill                  # 或网页操作
+gh pr create --base dev --fill
 ```
 
-PR 上的 `Lint`（约 30 秒）通过后即可 squash 合并。合并后删除功能分支。
-
-合并到 `dev` 会触发一次完整的 ROS 构建（push 事件），不阻塞合并，但红了要尽快修 ——
-`main` 的 PR 会强制要求同一次构建通过。
-
-## 发布流程
-
-```bash
-# 1. dev 上的内容通过 PR 合入 main
-gh pr create --base main --head dev --title "release: 0.2.0"
-
-# 2. 合并后打标签
-git switch main && git pull
-git tag -a v0.2.0 -m "ik_pressure_sensor 0.2.0"
-git push origin v0.2.0
-```
-
-发版前记得同步改 `package.xml` 与 `setup.py` 里的 `<version>`，并在 GitHub 上把标签做成 Release。
+`Python style` 检查通过后即可 squash 合并，合并后删除功能分支。  
+合入 `dev`会触发一次完整构建（不阻塞合并）；发往 `main` 的 PR 则必须构建通过才能合并。
 
 ## 本地检查
 
-不需要 ROS（纯 Python 部分）：
+不需要 ROS：
 
 ```bash
-python -m pip install -r requirements-dev.txt
+python -m pip install -r requirements-dev.txt   # 一次性
 python -m flake8 .
 python -m pytest test -q
 ```
 
-需要 ROS 2 Humble（完整构建 + ament lint）：
+需要 ROS 2 Humble：
 
 ```bash
 colcon build --packages-select ik_pressure_sensor
@@ -67,18 +49,30 @@ colcon test-result --verbose
 
 ## 提交信息
 
-用 Conventional Commits：
+采用 Conventional Commits, 示例：
 
 ```
 feat: 支持一次轮询多台从机
-fix: 修正断线后重连不重置统计的问题
+fix: 断线重连后重置统计
 docs: 补充 udev 配置说明
 test: 增加 CRC 异常帧用例
 ci: 新增 lint workflow
 ```
 
-## 不要提交的东西
+## `main` 发布流程
 
-- 厂家的说明书 PDF、例程工程、HEX、调试软件（第三方版权资料，不随仓库分发）
-- `build/`、`install/`、`log/`、`__pycache__/`、`.pytest_cache/`（`.gitignore` 已覆盖，别用 `git add -f` 绕过）
-- 任何临时调试脚本
+1. 在 `dev` 上更新 `package.xml` 与 `setup.py` 中的版本号，按普通 PR 合并
+2. 发起发版 PR：`gh pr create --base main --head dev --title "release: X.Y.Z"`
+3. 两个检查通过后以 merge commit 合并
+4. 打标签并创建 Release：
+
+```bash
+git switch main && git pull
+git tag -a vX.Y.Z -m "ik_pressure_sensor X.Y.Z"
+git push origin vX.Y.Z
+```
+
+## 不要提交
+
+1. `.gitignore` 中指定的文件与目录
+2. 临时调试脚本等
